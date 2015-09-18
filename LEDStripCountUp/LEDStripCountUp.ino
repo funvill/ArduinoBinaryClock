@@ -40,6 +40,15 @@ void setup() {
   gTime = 0 ; 
 }
 
+void debugPrintBinary( unsigned long value ) {
+  Serial.print("Value=[");
+  Serial.print( value, DEC );
+  Serial.print("] Binary=[");
+  Serial.print( value, BIN );
+  Serial.println("]");
+  
+}
+
 void setAllToBlack(){
   // Set to black. 
   for( unsigned char pixelOffset = 0 ; pixelOffset < strip.numPixels() ; pixelOffset++ ) {
@@ -62,6 +71,7 @@ void testLEDStrip() {
 
 void simpleCountUpClock(){
   gTime++ ; // Each loop, incurment the time. 
+  debugPrintBinary( gTime ); 
   
   // Loop thought the pixels in the LED strip turning on or off the LEDs if the bit in the time variable is on. 
   for( unsigned char pixelOffset = 0 ; pixelOffset < (sizeof( gTime ) * 8)   ; pixelOffset++ ) {    
@@ -81,6 +91,8 @@ void simpleCountUpClock(){
 void countUpBasedOnTimer(){
   unsigned long currentMillis = millis();
   if( currentMillis - previousMillis > MS_PER_SECOND ) {
+    debugPrintBinary( currentMillis / MS_PER_SECOND ); 
+    
     previousMillis = currentMillis ; 
     
     // Loop thought the pixels in the LED strip turning on or off the LEDs if the bit in the time variable is on. 
