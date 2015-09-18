@@ -14,7 +14,7 @@
 #define LED_PIN 6
 
 // Defines how many milli seconds there are in one second. 
-#define MS_PER_SECOND 1000 
+#define MS_PER_SECOND 300 
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = Arduino pin number (most are valid)
@@ -55,7 +55,7 @@ void setup() {
   testLEDStrip();
   
   // Configure the color for the pixels 
-  gSecondColorOn = strip.Color(255, 255, 0);
+  gSecondColorOn  = strip.Color(0, 0, 255);
   gSecondColorOff = strip.Color(0, 0, 0);
   
   // Reset the global time variable to a known value. 
@@ -98,9 +98,11 @@ void testLEDStrip() {
   setAllLEDs( strip.Color(0, 0, 255) );
   strip.show(); 
   delay(MS_PER_SECOND); 
-  
-  // Set to White. 
-  setAllLEDs( strip.Color(255, 255, 255) );
+    
+  // Rainbow 
+  for( unsigned char pixelOffset = 0 ; pixelOffset < strip.numPixels() ; pixelOffset++ ) {
+    strip.setPixelColor(pixelOffset, Wheel( (255 / strip.numPixels()) * pixelOffset ) );
+  }
   strip.show(); 
   delay(MS_PER_SECOND); 
 }
@@ -172,8 +174,64 @@ void countUpBasedOnTimer(){
   }
 }
 
+// This function is advanced. Come talk to me about it.
+
+void fancyCountUpClock() {
+  unsigned long currentMillis = millis(); 
+  
+  // Check to see if the interval has elapsed 
+  if( currentMillis - gTime > MS_PER_SECOND/strip.numPixels() ) {
+    gTime = currentMillis ; // Update the previouse time 
+    
+    // Show the Millis lead led. 
+    static unsigned char pixelMillisOffset = 0 ;
+    pixelMillisOffset++; 
+    if( pixelMillisOffset > strip.numPixels() ) {
+      // Reset 
+      strip.setPixelColor(strip.numPixels(), gSecondColorOff ); 
+      pixelMillisOffset = 0 ; 
+    }
+        
+    // Update the background Millis pixel. 
+    // Make the leading Millis pixel bright blue.
+    strip.setPixelColor(pixelMillisOffset, gSecondColorOn ); 
+    // Turn off the previouse pixel that might have been tunred on. 
+    if( pixelMillisOffset > 0 ) { 
+      strip.setPixelColor(pixelMillisOffset-1, gSecondColorOff ); 
+    }
+
+    
+    // Update the seconed LEDs 
+    for( unsigned char pixelOffset = 0 ; pixelOffset < (sizeof( unsigned long ) * 8) ; pixelOffset++ ) {
+      if( bitRead(currentMillis/MS_PER_SECOND, pixelOffset) == 1 ) {
+        strip.setPixelColor(pixelOffset, Wheel( (255 / strip.numPixels()) * pixelOffset ) ); // On 
+      } 
+    }
+    
+    // Show the updated LEDS.
+    strip.show();
+  }   
+}
+
+
+// Input a value 0 to 255 to get a color value.
+// The colours are a transition r - g - b - back to r.
+uint32_t Wheel(byte WheelPos) {
+  WheelPos = 255 - WheelPos;
+  if(WheelPos < 85) {
+   return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+  } else if(WheelPos < 170) {
+    WheelPos -= 85;
+   return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+  } else {
+   WheelPos -= 170;
+   return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+  }
+}
+
 
 void loop() {
   // simpleCountUpClock(); 
-  countUpBasedOnTimer(); 
+  // countUpBasedOnTimer(); 
+  fancyCountUpClock(); 
 }
