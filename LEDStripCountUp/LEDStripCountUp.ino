@@ -14,7 +14,7 @@
 #define LED_PIN 6
 
 // Defines how many milli seconds there are in one second. 
-#define MS_PER_SECOND 300 
+#define MS_PER_SECOND 1000 
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = Arduino pin number (most are valid)
