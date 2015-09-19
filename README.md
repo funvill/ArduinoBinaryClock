@@ -1,25 +1,12 @@
+Stand with Ahmed Arduino Binary clock Workshop #IStandWithAhmed
+===========================
+
 More information 
 https://talk.hackspace.ca/t/stand-with-ahmed-arduino-binary-clock-workshop-istandwithahmed-sunday-sept-20th-2015-3-30pm/3013?u=funvill
-
-
 
 In a time when government funding for sciences is dwindling, workshops that encourage youth to take an interest in science and technology are essential for the future of Canada and the world. 
 
 Increased knowledge of technology helps to avoid fearful reactions to creative thinking and technological innovation, such as the case of Ahmed, a student recently arrested in Texas for bringing a homemade clock to school.
-
-Please join at VHS to build your very own homemade clock.
-
-**Who:** 
-Anyone that is interesting in making a clock. 
-
-**Where:** 
-The vancouver hackspace 1715 Cook street #104 
-
-**When:** 
-Sunday Sept 20th, 2015 at 3:30 pm till 6pm 
-
-**Cost:** 
-$10 Please RSVP here https://www.eventbrite.com/e/stand-with-ahmed-arduino-binary-clock-workshop-istandwithahmed-tickets-18672538064  
 
 **Workshop** 
 In light of recent events, in this workshop we will building a binary countup clock using a Arduino (https://www.arduino.cc/), and a string of WS2812 RGB LEDs, and two buttons. 
@@ -40,18 +27,13 @@ In this workshop we will be going over the following topics.
 - Talking about what to do next. 
  
 **Equipment**. 
-Please bring your own laptop. VHS does not have any spare laptops for you to use in this workshop. 
-Parts 
- 
-All of the parts for this workshop will be available for you to borrow free of charge for the workshop. You can also bring your own equipment or you can also purchase the parts from VHS and take them home with you if you like. 
- 
-- Arduino and programing cable if required. (Arduino pro mini are available for $15 in the vending machine) 
-- 30 LED string of, WS2812 RGB LEDs (A 30x LED 1 Meter strip can be purchased for $12 CND)
-- Mini breadboard ($5) 
-- 2x A button (free)
-- 2x resistors to debounce the button (free)
+- Arduino and programing cable if required. 
+- 30 LED string of, WS2812 RGB LEDs 
+- Mini breadboard 
+- 2x A button 
+- 2x resistors to debounce the button 
 - A laptop. You must bring your own laptop for this workshop. We do not have any to spare. 
-- 5V 1 Amp power supply ($20)
+- 5V 1 Amp power supply 
 
 **Where to buy the parts from** 
 
