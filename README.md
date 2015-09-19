@@ -4,6 +4,10 @@ Stand with Ahmed Arduino Binary clock Workshop #IStandWithAhmed
 More information 
 https://talk.hackspace.ca/t/stand-with-ahmed-arduino-binary-clock-workshop-istandwithahmed-sunday-sept-20th-2015-3-30pm/3013?u=funvill
 
+Example Video 
+https://instagram.com/p/7w2y4DA5YG/
+
+
 In a time when government funding for sciences is dwindling, workshops that encourage youth to take an interest in science and technology are essential for the future of Canada and the world. 
 
 Increased knowledge of technology helps to avoid fearful reactions to creative thinking and technological innovation, such as the case of Ahmed, a student recently arrested in Texas for bringing a homemade clock to school.
