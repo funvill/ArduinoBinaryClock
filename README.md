@@ -48,4 +48,4 @@ In this workshop we will be going over the following topics.
 **Helpful links** 
 
 - Getting started with Arduino, Slides https://docs.google.com/presentation/d/17xPHKOKORkaRQvukS8ppnDqct0jHcWrnfia7GBo2MHk/edit
-NeoPixels (WS2812) Uber Guide  https://learn.adafruit.com/adafruit-neopixel-uberguide/overview
+- NeoPixels (WS2812) Uber Guide  https://learn.adafruit.com/adafruit-neopixel-uberguide/overview
