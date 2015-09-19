@@ -80,31 +80,17 @@ void setAllLEDs( uint32_t c ){
   }
 }
 
-// This function will set the color of all the LEDs to Red, Green, Blue, and white. 
-// This is used to test to make sure that all the LEDs in the strip are functioning correctly
-void testLEDStrip() { 
-  
-  // Set to Red. 
-  setAllLEDs( strip.Color(255, 0, 0) );
-  strip.show(); // Show the updated LEDS.
-  delay(MS_PER_SECOND); // Wait one sec
-  
-  // Set to Green. 
-  setAllLEDs( strip.Color(0, 255, 0) );
-  strip.show();
-  delay(MS_PER_SECOND); 
-  
-  // Set to Blue. 
-  setAllLEDs( strip.Color(0, 0, 255) );
-  strip.show(); 
-  delay(MS_PER_SECOND); 
-    
+// This function is used to make sure all the LEDs in the strip are functioning correctly
+void testLEDStrip() {    
   // Rainbow 
-  for( unsigned char pixelOffset = 0 ; pixelOffset < strip.numPixels() ; pixelOffset++ ) {
-    strip.setPixelColor(pixelOffset, Wheel( (255 / strip.numPixels()) * pixelOffset ) );
+  // Cycle thought the rainbow 5 times quickly. 
+  for( int rainbowOffset = 0 ; rainbowOffset < 256*5 ; rainbowOffset++ ) {
+    for( int pixelOffset = 0 ; pixelOffset < strip.numPixels() ; pixelOffset++ ) {
+      strip.setPixelColor(pixelOffset, Wheel(((pixelOffset * 256 / strip.numPixels()) + rainbowOffset) & 255));
+    }
+    strip.show(); 
+    delay(1); 
   }
-  strip.show(); 
-  delay(MS_PER_SECOND); 
 }
 
 // This function will take a value and extract the bits from the value to be shown as pixels on the 
@@ -213,6 +199,48 @@ void fancyCountUpClock() {
   }   
 }
 
+// Gives the user a warning flash then starts a count down. 
+void CountDownTimer( unsigned long timeInSeconds ) {
+  
+  // Set to Red. 
+  setAllLEDs( strip.Color(0, 0, 0) );
+  strip.show(); // Show the updated LEDS.
+  for( unsigned char pixelOffset = strip.numPixels() ; pixelOffset >= 0 ; pixelOffset-- ) {
+    strip.setPixelColor(pixelOffset, strip.Color(255, 0, 0) );
+    strip.show();
+    delay(MS_PER_SECOND/strip.numPixels()); 
+  }
+  
+  // Count down the red to yellow. 
+  for( unsigned char pixelOffset = strip.numPixels() ; pixelOffset >= 0 ; pixelOffset-- ) {
+    strip.setPixelColor(pixelOffset, strip.Color(255, 255, 0) );
+    strip.show();
+    delay(MS_PER_SECOND/strip.numPixels()); 
+  }
+    
+  // Show count down. 
+  while( timeInSeconds > 0 ) {
+    unsigned long currentMillis = millis();   
+    // Check to see if the interval has elapsed 
+    if( currentMillis - gTime > MS_PER_SECOND ) {
+      gTime = currentMillis ; // Update the previouse time 
+      timeInSeconds--; 
+      
+      UpdateLEDsFromValue( timeInSeconds ); 
+    }
+  }
+  
+  // Done, flash a bunch of times. 
+  for( int flashCount = 0 ; flashCount < 10 ; flashCount++ ) {
+    setAllLEDs( strip.Color(255, 0, 0) );
+    strip.show(); // Show the updated LEDS.
+    delay(MS_PER_SECOND); 
+    setAllLEDs( strip.Color(0, 0, 0) );
+    strip.show(); // Show the updated LEDS.
+    delay(MS_PER_SECOND); 
+  }
+}
+
 
 // Input a value 0 to 255 to get a color value.
 // The colours are a transition r - g - b - back to r.
@@ -231,7 +259,9 @@ uint32_t Wheel(byte WheelPos) {
 
 
 void loop() {
-  // simpleCountUpClock(); 
+ 
+  simpleCountUpClock(); 
   // countUpBasedOnTimer(); 
-  fancyCountUpClock(); 
+  // fancyCountUpClock(); 
+  // CountDownTimer( 120 ); 
 }
