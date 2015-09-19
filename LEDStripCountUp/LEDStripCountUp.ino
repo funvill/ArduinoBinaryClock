@@ -14,7 +14,7 @@
 #define LED_PIN 6
 
 // Defines how many milli seconds there are in one second. 
-#define MS_PER_SECOND 1000 
+#define MS_PER_SECOND (1000 )
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = Arduino pin number (most are valid)
@@ -31,12 +31,12 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(30, LED_PIN, NEO_GRB + NEO_KHZ800);
 // on a live circuit...if you must, connect GND first.
 
 // This is a global variable used to store the current time. Generally, you 
-// should use "unsigned long" for variables that hold time. The value will
+// should use "uint32_t" for variables that hold time. The value will
 // quickly become too large for an int to store. 
 // 
 // The Arduino Pro Mini uses a ATmega328 chip. This chip is a 8 bit AVR. 
 // Because of this the size of a unsigned long is 4 BYTES or 32 bits. 
-unsigned long gTime ; 
+uint32_t gTime ; 
 
 uint32_t gSecondColorOn, gSecondColorOff; 
 
@@ -59,12 +59,14 @@ void setup() {
   gSecondColorOff = strip.Color(0, 0, 0);
   
   // Reset the global time variable to a known value. 
-  gTime = 0 ; 
+  // 1442646883 = GMT: Sat, 19 Sep 2015 07:14:43 GMT || 9/19/2015, 12:14:43 AM GMT-7:00 DST
+  // 1442874600 = GMT: Mon, 21 Sep 2015 22:30:00 GMT || 9/21/2015, 03:30:00 PM GMT-7:00 DST
+  gTime = 1442874600 ; 
 }
 
 // This function will print the value as a decimal number and in binary 
 // This can be useful for debuging what is happening in your application. 
-void debugPrintBinary( unsigned long value ) {
+void debugPrintBinary( uint32_t value ) {
   Serial.print("Value=[");
   Serial.print( value, DEC );
   Serial.print("] Binary=[");
@@ -91,11 +93,12 @@ void testLEDStrip() {
     strip.show(); 
     delay(1); 
   }
+  setAllLEDs( gSecondColorOff ); 
 }
 
 // This function will take a value and extract the bits from the value to be shown as pixels on the 
 // LED strip. 
-void UpdateLEDsFromValue( unsigned long value ) {
+void UpdateLEDsFromValue( uint32_t value ) {
   debugPrintBinary( value ); 
   
   // Loop thought the value extracting the bits. If a bit is 1 then turn the pixel to the on color 
@@ -106,7 +109,7 @@ void UpdateLEDsFromValue( unsigned long value ) {
   // occupied by an array.
   // Reference: https://www.arduino.cc/en/Reference/sizeof
   
-  for( unsigned char pixelOffset = 0 ; pixelOffset < (sizeof( unsigned long ) * 8) ; pixelOffset++ ) {
+  for( unsigned char pixelOffset = 0 ; pixelOffset <= (sizeof( uint32_t ) * 8) ; pixelOffset++ ) {
     // bitRead()
     // Reads a bit of a number. 
     // Reference: https://www.arduino.cc/en/Reference/bitRead
@@ -144,37 +147,40 @@ void simpleCountUpClock(){
 // Then if the current time is greater then the intervale (one sec) it will trigger the program to update 
 // the LEDs with the new time value. 
 void countUpBasedOnTimer(){  
+  static uint32_t previousMillis = millis(); ;  
+
   // millis()
   // Returns the number of milliseconds since the Arduino board began running 
   // the current program. This number will overflow (go back to zero), after 
   // approximately 50 days.
   // Reference: https://www.arduino.cc/en/Reference/millis 
-  unsigned long currentMillis = millis();
+  uint32_t currentMillis = millis();
   
   // Check to see if the interval has elapsed 
-  if( currentMillis - gTime > MS_PER_SECOND ) {
-    gTime = currentMillis ; // Update the previouse time 
+  if( currentMillis - previousMillis > MS_PER_SECOND ) {
+    previousMillis = currentMillis ; // Update the previouse time 
     
     // Update the LEDs 
-    UpdateLEDsFromValue( currentMillis/MS_PER_SECOND ); 
+    UpdateLEDsFromValue( gTime + ( currentMillis / MS_PER_SECOND ) ); 
   }
 }
 
 // This function is advanced. Come talk to me about it.
 
 void fancyCountUpClock() {
-  unsigned long currentMillis = millis(); 
+  static uint32_t previousMillis = millis(); ;  
+  uint32_t currentMillis = millis() ; 
   
   // Check to see if the interval has elapsed 
-  if( currentMillis - gTime > MS_PER_SECOND/strip.numPixels() ) {
-    gTime = currentMillis ; // Update the previouse time 
+  if( currentMillis - previousMillis > MS_PER_SECOND/strip.numPixels() ) {
+    previousMillis = currentMillis ; // Update the previous time 
     
     // Show the Millis lead led. 
-    static unsigned char pixelMillisOffset = 0 ;
+    static int pixelMillisOffset = 0 ;
     pixelMillisOffset++; 
-    if( pixelMillisOffset > strip.numPixels() ) {
+    if( pixelMillisOffset >= strip.numPixels() ) {
       // Reset 
-      strip.setPixelColor(strip.numPixels(), gSecondColorOff ); 
+      setAllLEDs( gSecondColorOff ); 
       pixelMillisOffset = 0 ; 
     }
         
@@ -188,11 +194,13 @@ void fancyCountUpClock() {
 
     
     // Update the seconed LEDs 
-    for( unsigned char pixelOffset = 0 ; pixelOffset < (sizeof( unsigned long ) * 8) ; pixelOffset++ ) {
-      if( bitRead(currentMillis/MS_PER_SECOND, pixelOffset) == 1 ) {
+    uint32_t currentTime = gTime + ( currentMillis / MS_PER_SECOND ) ; 
+    for( int pixelOffset = 0 ; pixelOffset < (sizeof( uint32_t ) * 8) ; pixelOffset++ ) {
+      if( bitRead( currentTime, pixelOffset) == 1 ) {
         strip.setPixelColor(pixelOffset, Wheel( (255 / strip.numPixels()) * pixelOffset ) ); // On 
       } 
     }
+    
     
     // Show the updated LEDS.
     strip.show();
@@ -200,30 +208,31 @@ void fancyCountUpClock() {
 }
 
 // Gives the user a warning flash then starts a count down. 
-void CountDownTimer( unsigned long timeInSeconds ) {
+void CountDownTimer( uint32_t timeInSeconds ) {
   
   // Set to Red. 
   setAllLEDs( strip.Color(0, 0, 0) );
   strip.show(); // Show the updated LEDS.
-  for( unsigned char pixelOffset = strip.numPixels() ; pixelOffset >= 0 ; pixelOffset-- ) {
+  for( int pixelOffset = strip.numPixels() ; pixelOffset >= 0 ; pixelOffset-- ) {
     strip.setPixelColor(pixelOffset, strip.Color(255, 0, 0) );
     strip.show();
     delay(MS_PER_SECOND/strip.numPixels()); 
   }
   
   // Count down the red to yellow. 
-  for( unsigned char pixelOffset = strip.numPixels() ; pixelOffset >= 0 ; pixelOffset-- ) {
+  for( int pixelOffset = strip.numPixels() ; pixelOffset >= 0 ; pixelOffset-- ) {
     strip.setPixelColor(pixelOffset, strip.Color(255, 255, 0) );
     strip.show();
     delay(MS_PER_SECOND/strip.numPixels()); 
   }
-    
+
+  uint32_t previousMillis = millis();       
   // Show count down. 
   while( timeInSeconds > 0 ) {
-    unsigned long currentMillis = millis();   
+    uint32_t currentMillis = millis();   
     // Check to see if the interval has elapsed 
-    if( currentMillis - gTime > MS_PER_SECOND ) {
-      gTime = currentMillis ; // Update the previouse time 
+    if( currentMillis - previousMillis > MS_PER_SECOND ) {
+      previousMillis = currentMillis ; // Update the previouse time 
       timeInSeconds--; 
       
       UpdateLEDsFromValue( timeInSeconds ); 
@@ -257,11 +266,10 @@ uint32_t Wheel(byte WheelPos) {
   }
 }
 
-
 void loop() {
  
-  simpleCountUpClock(); 
+  // simpleCountUpClock(); 
   // countUpBasedOnTimer(); 
-  // fancyCountUpClock(); 
+  fancyCountUpClock(); 
   // CountDownTimer( 120 ); 
 }
